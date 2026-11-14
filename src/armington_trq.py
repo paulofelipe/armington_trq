@@ -300,6 +300,21 @@ class ArmingtonTRQ:
             "base_exp": base_exp,
         }
 
+    def summary(self):
+        """Headline results in the format of the USITC working paper tables
+        (subject region = first region with a quota; domestic = region 0)."""
+        self._check_solved()
+        dom = 0
+        subj = self.quota_idx[0] if len(self.quota_idx) else 1
+        return {
+            "price_dom_pct": self.price_change_pct[dom],
+            "price_subj_pct": self.price_change_pct[subj],
+            "price_overall_pct": (self.vars_out["P"] - 1.0) * 100.0,
+            "volume_subj": self.qd_out[subj],
+            "output_dom_pct": self.quantity_change_pct[dom],
+            "volume_subj_pct": self.quantity_change_pct[subj],
+        }
+
     def _regime(self, i):
         """Label describing how the quota behaves for region `i`."""
         if self.qbar[i] <= 0:
@@ -410,12 +425,3 @@ class ArmingtonTRQ:
         else:
             plt.show()
 
-
-if __name__ == "__main__":
-    model = ArmingtonTRQ(
-        t_in=[0.0, 0.1, 0.0],
-        t_out=[0.0, 0.5, 0.0]
-    )
-    model.solve()
-    model.report()
-    model.plot_welfare()
